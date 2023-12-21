@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
-use App\Mail\EmailVerification;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Models\EmailVerification;
+use App\Mail\EmailVerificationMail;
 use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
@@ -28,13 +28,16 @@ class RegisterController extends Controller
             'user_role'=>$request->user_role,
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $otp = mt_rand(100000, 999999);
+        $emailVerification = new EmailVerification;
+        $emailVerification->user_id = $user->id;
+        $emailVerification->otp = $otp;
+        $emailVerification->save();
 
-        Mail::to($user->email)->send(new EmailVerification($user->email));
+        Mail::to($user->email)->send(new EmailVerificationMail($otp));
 
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 201);
+            'message' => 'Registration successful. Please check your email for verification.',
+        ]);
     }
 }
