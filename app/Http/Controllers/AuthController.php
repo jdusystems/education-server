@@ -65,4 +65,52 @@ class AuthController extends Controller
             'message' => 'Logged out',
         ];
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $fields = $request->validate([
+            'phone_number' => 'required|string',
+            'new_password' => 'required|string|confirmed',
+        ]);
+
+        $user = User::where('phone_number', $fields['phone_number'])->first();
+
+        if (!$user) {
+            return response([
+                "message" => "Phone number is wrong",
+            ], 401);
+        }
+
+        $user->update([
+            "password" => bcrypt($fields["new_password"]),
+        ]);
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        return response(null, 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $fields = $request->validate([
+            'phone_number' => 'required|string',
+            'new_password' => 'required|string|confirmed',
+        ]);
+
+        $user = User::where('phone_number', $fields['phone_number'])->first();
+
+        if (!$user) {
+            return response([
+                "message" => "Phone number is wrong",
+            ], 401);
+        }
+
+        $user->update([
+            "password" => bcrypt($fields["new_password"]),
+        ]);
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        return response(null, 200);
+    }
 }
