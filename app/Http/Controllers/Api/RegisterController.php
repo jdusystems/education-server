@@ -20,7 +20,7 @@ class RegisterController extends Controller
             'name' => $request->name,
             'role' => $request->role,
             'password' => $request->password,
-            'code' => $code
+            'code' => $request->code
         ]);
         $jsonPayload = '{
             "messages": [
