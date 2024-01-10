@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RegisterController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,4 +29,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/send-sms' , [RegisterController::class , 'sendSms']);
+Route::post('/send-sms', [RegisterController::class, 'sendSms']);

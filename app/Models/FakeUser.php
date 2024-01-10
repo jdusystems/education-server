@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class FakeUser extends Model
 {
     use HasFactory;
-    protected $table="fake_users";
+    protected $table = "fake_users";
     protected $fillable = [
-        'name' , 'phone_number' , 'password'
+        'name',
+        'phone_number',
+        'password',
+        'code'
     ];
 }

@@ -11,15 +11,16 @@ use Illuminate\Support\Facades\Http;
 
 class RegisterController extends Controller
 {
-    public function sendSms(StoreFakeUserRequest $request){
-       FakeUser::truncate();
-        $code = rand(100000 , 999999);
+    public function sendSms(StoreFakeUserRequest $request)
+    {
+        FakeUser::truncate();
+        $code = rand(100000, 999999);
         FakeUser::create([
-            'phone_number' => $request->phone_number ,
-            'name' => $request->name ,
-            'role' => $request->role ,
-            'password' => $request->password ,
-            'code' => $request->code
+            'phone_number' => $request->phone_number,
+            'name' => $request->name,
+            'role' => $request->role,
+            'password' => $request->password,
+            'code' => $code
         ]);
         $jsonPayload = '{
             "messages": [

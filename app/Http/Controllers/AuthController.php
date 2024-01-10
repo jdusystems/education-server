@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FakeUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,16 +12,30 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string',
             'phone_number' => 'required|string|unique:users,phone_number',
-            'password' => 'required|string|confirmed',
+            'code' => 'required|string|digits:6',
         ]);
 
+        $fakeuser = FakeUser::where('phone_number', $request->phone_number)->first();
+
+        if (!$fakeuser) {
+            return response()->json([
+                'message' => 'Not found'
+            ], 404);
+        }
+        if ($fakeuser->code != $fields['code']) {
+            return response()->json([
+                'message' => 'Incorrect code'
+            ], 404);
+        }
+
         $user = User::create([
-            'name' => $fields['name'],
-            'phone_number' => $fields['phone_number'],
-            'password' => bcrypt($fields['password']),
+            'name' => $fakeuser->name,
+            'phone_number' => $fakeuser->phone_number,
+            'password' => bcrypt($fakeuser->password),
         ]);
+
+        $fakeuser->delete();
 
         $token = $user->createToken('myapptoken')->plainTextToken;
 
@@ -70,31 +85,39 @@ class AuthController extends Controller
     {
         $fields = $request->validate([
             'phone_number' => 'required|string',
-            'new_password' => 'required|string|confirmed',
+            'code' => 'required|string|digits:6',
         ]);
 
         $user = User::where('phone_number', $fields['phone_number'])->first();
+        $fakeuser = FakeUser::where('phone_number', $fields['phone_number'])->first();
 
         if (!$user) {
             return response([
                 "message" => "Phone number is wrong",
             ], 401);
         }
+        if ($fakeuser->code != $fields['code']) {
+            return response([
+                'message' => 'Not Autorized',
+            ]);
+        }
 
         $user->update([
-            "password" => bcrypt($fields["new_password"]),
+            "password" => bcrypt($fakeuser["password"]),
         ]);
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        $fakeuser->delete();
 
-        return response(null, 200);
+        return response([
+            "message" => "Password Updated successfully.",
+        ], 200);
     }
 
     public function resetPassword(Request $request)
     {
         $fields = $request->validate([
             'phone_number' => 'required|string',
-            'new_password' => 'required|string|confirmed',
+            'password' => 'required|string|confirmed',
         ]);
 
         $user = User::where('phone_number', $fields['phone_number'])->first();
@@ -106,11 +129,11 @@ class AuthController extends Controller
         }
 
         $user->update([
-            "password" => bcrypt($fields["new_password"]),
+            "password" => bcrypt($fields["password"]),
         ]);
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
-
-        return response(null, 200);
+        return response([
+            "message" => "Password Updated successfully.",
+        ], 200);
     }
 }
