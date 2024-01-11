@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\RegisterController;
 Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/forgot-password", [AuthController::class, "forgotPassword"]);
+Route::post("/send-sms-forgot", [AuthController::class, "sendSms"]);
 
 // Protected Routes
 Route::group(['middleware' => ['auth:sanctum']], function () {

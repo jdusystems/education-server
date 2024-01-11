@@ -6,6 +6,7 @@ use App\Models\FakeUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -85,6 +86,7 @@ class AuthController extends Controller
     {
         $fields = $request->validate([
             'phone_number' => 'required|string',
+            'password' => 'required|string|confirmed',
             'code' => 'required|string|digits:6',
         ]);
 
@@ -103,7 +105,7 @@ class AuthController extends Controller
         }
 
         $user->update([
-            "password" => bcrypt($fakeuser["password"]),
+            "password" => bcrypt($fields['password']),
         ]);
 
         $fakeuser->delete();
@@ -136,4 +138,48 @@ class AuthController extends Controller
             "message" => "Password Updated successfully.",
         ], 200);
     }
+
+    public function sendSms(Request $request)
+    {
+        $fields = $request->validate([
+            'phone_number' => 'required|string',
+        ]);
+        $code = rand(100000, 999999);
+        FakeUser::create([
+            'phone_number' => $fields['phone_number'],
+            'code' => $code,
+        ]);
+        $jsonPayload = '{
+            "messages": [
+                {
+                    "recipient": "' . $request->phone_number . '",
+                    "message-id": "ress12345",
+                    "sms": {
+                        "originator": "3700",
+                        "content": {
+                            "text": "' . $code . '"
+                        }
+                    }
+                }
+            ]
+        }';
+        $username = env('SMS_CLIENT_USERNAME');
+        $password = env('SMS_CLIENT_PASSWORD');
+        $url = env('SMS_SERVICE_URL');
+
+        try {
+            Http::withBody($jsonPayload)->withBasicAuth($username, $password)->withHeaders([
+                'headers' => [
+                    'Accept' => 'application/json'
+                ],
+            ])->post($url);
+            // Process the response data as needed
+            return response()->json(['message' => "SMS muvaffaqiyatli jo'natildi", 'status_code' => 200]);
+        } catch (\Exception $e) {
+            // Handle exceptions or errors
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
 }
