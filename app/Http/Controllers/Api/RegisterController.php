@@ -14,13 +14,15 @@ class RegisterController extends Controller
     public function sendSms(StoreFakeUserRequest $request)
     {
         $code = rand(100000, 999999);
-        FakeUser::create([
+
+        $fakeUser = FakeUser::firstOrNew([
             'phone_number' => $request->phone_number,
-            'name' => $request->name,
-            'role' => $request->role,
-            'password' => $request->password,
-            'code' => $code
         ]);
+        $fakeUser->name = $request->name;
+        $fakeUser->role = $request->role;
+        $fakeUser->password = $request->password;
+        $fakeUser->code = $request->code;
+
         $jsonPayload = '{
             "messages": [
                 {
