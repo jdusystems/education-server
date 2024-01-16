@@ -56,11 +56,16 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('phone_number', $fields['phone_number'])->first();
+        $fakeUser = FakeUser::where('phone_number', $fields['phone_number'])->first();
 
         if (!$user || !Hash::check($fields["password"], $user->password)) {
             return response([
                 "message" => "Username or Password is wrong",
             ], 401);
+        }
+
+        if ($fakeUser && $fakeUser->phone_number == $user->phone_number) {
+            $fakeUser->delete();
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;
