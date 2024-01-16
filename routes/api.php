@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\RegisterController;
@@ -20,6 +21,7 @@ Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/forgot-password", [AuthController::class, "forgotPassword"]);
 Route::post("/send-sms-forgot", [AuthController::class, "sendSms"]);
+Route::resource("/categories", CategoryController::class);
 
 // Protected Routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
