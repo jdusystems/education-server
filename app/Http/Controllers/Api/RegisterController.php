@@ -21,7 +21,9 @@ class RegisterController extends Controller
         $fakeUser->name = $request->name;
         $fakeUser->role = $request->role;
         $fakeUser->password = $request->password;
-        $fakeUser->code = $request->code;
+        $fakeUser->code = $code;
+
+        $fakeUser->save();
 
         $jsonPayload = '{
             "messages": [
@@ -63,11 +65,11 @@ class RegisterController extends Controller
         ]);
         $code = rand(100000, 999999);
 
-        $fakeUser = FakeUser::where('phone_number' , $request->phone_number)->first();
+        $fakeUser = FakeUser::where('phone_number', $request->phone_number)->first();
 
         $fakeUser->updateOrCreate(
             [
-              'phone_number' => $request->phone_number
+                'phone_number' => $request->phone_number
             ],
             [
                 'phone_number' => $request->phone_number,
