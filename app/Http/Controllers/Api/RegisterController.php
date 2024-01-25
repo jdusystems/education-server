@@ -21,7 +21,7 @@ class RegisterController extends Controller
             return response([
                 'code' => 403 ,
                 'message' => "Bu telefon raqam oldin ro'yhatdan o'tgan!"
-            ]);
+            ] , 403);
         }
         $fakeUser = FakeUser::firstOrNew([
             'phone_number' => $request->phone_number,
