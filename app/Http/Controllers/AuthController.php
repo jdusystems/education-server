@@ -53,9 +53,17 @@ class AuthController extends Controller
         $user = User::where('phone_number', $fields['phone_number'])->first();
         $fakeUser = FakeUser::where('phone_number', $fields['phone_number'])->first();
 
-        if (!$user || !Hash::check($fields["password"], $user->password)) {
+        if (!$user) {
             return response([
-                "message" => "Username or Password is wrong",
+                'code' =>404 ,
+                "message" => "Record not found!",
+            ], 404);
+        }
+
+        if(!Hash::check($fields["password"], $user->password)){
+            return response([
+                'code' =>401 ,
+                "message" => "Password id incorrect!",
             ], 401);
         }
 
