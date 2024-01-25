@@ -18,7 +18,7 @@ class AuthController extends Controller
         ]);
 
         $fakeuser = FakeUser::where('phone_number', $request->phone_number)->first();
-
+        return $fakeuser;
         if (!$fakeuser) {
             return response()->json([
                 'message' => 'Not found'

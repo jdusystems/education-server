@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFakeUserRequest;
 use App\Models\FakeUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -14,7 +15,14 @@ class RegisterController extends Controller
     public function sendSms(StoreFakeUserRequest $request)
     {
         $code = rand(100000, 999999);
+        $phoneNumber = User::where('phone_number')->first();
 
+        if(!$phoneNumber){
+            return response([
+                'code' => 403 ,
+                'message' => "Bu telefon raqam oldin ro'yhatdan o'tgan!"
+            ]);
+        }
         $fakeUser = FakeUser::firstOrNew([
             'phone_number' => $request->phone_number,
         ]);
@@ -72,7 +80,6 @@ class RegisterController extends Controller
             [
                 'phone_number' => $request->phone_number,
                 'code' => $code
-
             ],
         );
 
