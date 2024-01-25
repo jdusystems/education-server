@@ -18,7 +18,6 @@ class AuthController extends Controller
         ]);
 
         $fakeuser = FakeUser::where('phone_number', $request->phone_number)->first();
-        return $fakeuser;
         if (!$fakeuser) {
             return response()->json([
                 'message' => 'Not found'
@@ -35,17 +34,13 @@ class AuthController extends Controller
             'phone_number' => $fakeuser->phone_number,
             'password' => bcrypt($fakeuser->password),
         ]);
-
         $fakeuser->delete();
-
         $token = $user->createToken('myapptoken')->plainTextToken;
 
-        $response = [
-            'user' => $user,
-            'token' => $token,
-        ];
-
-        return response($response, 201);
+        return response([
+            'user' => $user ,
+            'token' => $token
+        ] , 201);
     }
 
     public function login(Request $request)

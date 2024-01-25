@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'phone_number',
         'password',
+        'image_name' ,
+        'image_url'
     ];
 
     public function education()

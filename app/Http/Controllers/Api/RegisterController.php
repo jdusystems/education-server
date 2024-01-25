@@ -14,10 +14,10 @@ class RegisterController extends Controller
 {
     public function sendSms(StoreFakeUserRequest $request)
     {
+//        return $request;
         $code = rand(100000, 999999);
-        $phoneNumber = User::where('phone_number')->first();
-
-        if(!$phoneNumber){
+        $phoneNumber = User::where('phone_number' , $request->phone_number)->first();
+        if($phoneNumber){
             return response([
                 'code' => 403 ,
                 'message' => "Bu telefon raqam oldin ro'yhatdan o'tgan!"
