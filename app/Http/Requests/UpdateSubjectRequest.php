@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreFakeUserRequest extends FormRequest
+class UpdateSubjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +23,7 @@ class StoreFakeUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone_number' => 'required|numeric|digits:12',
-            'name' => 'required',
-            'role' => 'required',
-            'password' => ['required', 'min:8', 'confirmed']
+            "name" => ["required", "string", Rule::unique("subjects", "name")->ignore($this->subject->id)],
         ];
     }
 }
